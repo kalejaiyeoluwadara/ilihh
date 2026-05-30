@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
 
 import { CATEGORIES } from '@/data/categories';
 import { Artisan } from '@/data/artisans';
@@ -140,9 +141,7 @@ export function ClientDashboard({
             <ArtisanCard
               key={artisan.id}
               artisan={artisan}
-              onBookPress={() => {
-                // Book Press Action (could trigger an alert or a modal later)
-              }}
+              onBookPress={() => router.push(`/artisan/${artisan.id}`)}
             />
           ))
         )}

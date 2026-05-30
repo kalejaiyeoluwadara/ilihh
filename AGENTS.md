@@ -453,6 +453,8 @@ Some features have dedicated agent docs with scope, architecture, and checklists
 | Feature | Documentation |
 | ------- | ------------- |
 | Authentication (login, sign-up, session) | [docs/auth-feature.md](./docs/auth-feature.md) |
+| Artisan detail (profile, portfolio, reviews, booking entry) | [docs/artisan-detail-feature.md](./docs/artisan-detail-feature.md) |
+| Booking (Book Now form, client bookings) | [docs/booking-feature.md](./docs/booking-feature.md) |
 
 ---
 

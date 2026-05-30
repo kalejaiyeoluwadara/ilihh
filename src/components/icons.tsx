@@ -222,3 +222,15 @@ export function BriefcaseIcon({ size = 20, color, style }: IconProps) {
     />
   );
 }
+
+export function ClockIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'clock', android: 'schedule', web: 'schedule' }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}

@@ -1,18 +1,7 @@
-export interface Artisan {
-  id: string;
-  name: string;
-  category: string;
-  rating: number;
-  reviewsCount: number;
-  jobsCompleted: number;
-  location: string;
-  distance: string;
-  rate: string;
-  bio: string;
-  avatar: string;
-  isVerified: boolean;
-  isAvailable: boolean;
-}
+import { ARTISAN_DETAILS } from '@/data/artisan-details';
+import type { Artisan } from '@/types/artisan-detail';
+
+export type { Artisan };
 
 export interface BookingRequest {
   id: string;
@@ -27,98 +16,37 @@ export interface BookingRequest {
   status: 'pending' | 'accepted' | 'declined' | 'completed';
 }
 
-export const ARTISANS: Artisan[] = [
-  {
-    id: 'art-1',
-    name: 'Babajide Alao',
-    category: 'carpentry',
-    rating: 4.9,
-    reviewsCount: 32,
-    jobsCompleted: 45,
-    location: 'Ilisan Central',
-    distance: '0.6 km',
-    rate: '₦5,000/hr',
-    bio: 'Master craftsman with over 10 years of experience in furniture making, roof structures, and wood repairs. Known for precision and high-quality local materials.',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
-    isVerified: true,
-    isAvailable: true,
-  },
-  {
-    id: 'art-2',
-    name: 'Chioma Okafor',
-    category: 'tailoring',
-    rating: 4.95,
-    reviewsCount: 48,
-    jobsCompleted: 62,
-    location: 'Market Square',
-    distance: '1.2 km',
-    rate: '₦12,000/day',
-    bio: 'Specialized in bespoke traditional outfits, corporate wear, and wedding attire. High attention to detail and fast delivery times.',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-    isVerified: true,
-    isAvailable: true,
-  },
-  {
-    id: 'art-3',
-    name: 'Tunde Falode',
-    category: 'plumbing',
-    rating: 4.8,
-    reviewsCount: 22,
-    jobsCompleted: 29,
-    location: 'Near Babcock Univ',
-    distance: '1.8 km',
-    rate: '₦4,000/hr',
-    bio: 'Expert in residential plumbing, leak detection, pipe replacement, and water pump repairs. Available for emergency callouts.',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
-    isVerified: true,
-    isAvailable: true,
-  },
-  {
-    id: 'art-4',
-    name: 'Ibrahim Musa',
-    category: 'electrical',
-    rating: 4.7,
-    reviewsCount: 18,
-    jobsCompleted: 24,
-    location: 'Expressway Junction',
-    distance: '2.5 km',
-    rate: '₦3,500/hr',
-    bio: 'Licensed domestic electrician. Expertise includes house wiring, inverter setups, generator maintenance, and electrical appliance fixes.',
-    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=200',
-    isVerified: false,
-    isAvailable: true,
-  },
-  {
-    id: 'art-5',
-    name: 'Funmilayo Bello',
-    category: 'hairdressing',
-    rating: 4.9,
-    reviewsCount: 38,
-    jobsCompleted: 50,
-    location: 'Babcock Gate Road',
-    distance: '0.9 km',
-    rate: '₦8,000/day',
-    bio: 'Professional hair stylist and beautician. Expert in knotless braids, dreadlocks, hair extensions, and bridal styling.',
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200',
-    isVerified: true,
-    isAvailable: true,
-  },
-  {
-    id: 'art-6',
-    name: 'Gbenga Adebayo',
-    category: 'masonry',
-    rating: 4.6,
-    reviewsCount: 12,
-    jobsCompleted: 18,
-    location: 'Oru Road',
-    distance: '3.1 km',
-    rate: '₦15,000/day',
-    bio: 'Experienced bricklayer and plastering specialist. Quality workmanship on building extensions, tiling, and compound paving.',
-    avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=200',
-    isVerified: false,
-    isAvailable: false,
-  },
-];
+export const ARTISANS: Artisan[] = ARTISAN_DETAILS.map(
+  ({
+    id,
+    name,
+    category,
+    rating,
+    reviewsCount,
+    jobsCompleted,
+    location,
+    distance,
+    rate,
+    bio,
+    avatar,
+    isVerified,
+    isAvailable,
+  }) => ({
+    id,
+    name,
+    category,
+    rating,
+    reviewsCount,
+    jobsCompleted,
+    location,
+    distance,
+    rate,
+    bio,
+    avatar,
+    isVerified,
+    isAvailable,
+  })
+);
 
 export const MOCK_BOOKING_REQUESTS: BookingRequest[] = [
   {

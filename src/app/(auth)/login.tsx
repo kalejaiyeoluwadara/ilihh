@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Text, TouchableOpacity, View, useColorScheme } from 'react-native';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { AuthScreenLayout } from '@/components/auth-screen-layout';
 import { AuthTextInput } from '@/components/auth-text-input';
@@ -9,6 +9,7 @@ import { BackIcon, EyeIcon, EyeSlashIcon } from '@/components/icons';
 import { PrimaryButton } from '@/components/primary-button';
 import { images } from '@/constants/images';
 import { validateLogin } from '@/lib/auth-validation';
+import { getRedirectHref } from '@/lib/navigation';
 import { useAuthStore } from '@/store/use-auth-store';
 import type { AuthValidationErrors } from '@/types/auth';
 
@@ -16,6 +17,7 @@ export default function LoginScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const login = useAuthStore((state) => state.login);
+  const { redirect } = useLocalSearchParams<{ redirect?: string }>();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,7 +42,7 @@ export default function LoginScreen() {
       return;
     }
 
-    router.replace('/');
+    router.replace(getRedirectHref(redirect));
   };
 
   return (
@@ -114,7 +116,7 @@ export default function LoginScreen() {
         <Text className="font-poppins text-sm text-text-secondary dark:text-slate-400">
           Don&apos;t have an account?{' '}
         </Text>
-        <TouchableOpacity onPress={() => router.push('/sign-up')} activeOpacity={0.7}>
+        <TouchableOpacity onPress={() => router.push(redirect ? `/sign-up?redirect=${encodeURIComponent(String(redirect))}` : '/sign-up')} activeOpacity={0.7}>
           <Text className="font-poppins-semibold text-sm text-primary-purple dark:text-indigo-400">
             Sign up
           </Text>

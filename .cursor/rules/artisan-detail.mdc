@@ -1,0 +1,39 @@
+---
+description: Artisan detail, portfolio, reviews, contact, and booking entry screen rules
+globs: src/app/artisan/**/*,src/data/artisan-details.ts,src/types/artisan-detail.ts,src/lib/artisans.ts,src/components/artisan-detail*.tsx,src/components/portfolio-section.tsx,src/components/review-card.tsx,src/components/reviews-section.tsx,src/components/contact-details-section.tsx,src/components/billing-section.tsx,docs/artisan-detail-feature.md
+alwaysApply: false
+---
+
+# Artisan Detail — Agent Rules
+
+**Full spec:** [docs/artisan-detail-feature.md](../../docs/artisan-detail-feature.md)  
+**Global rules:** [AGENTS.md](../../AGENTS.md)
+
+## Before coding
+
+1. Read `docs/artisan-detail-feature.md` and `AGENTS.md`
+2. Use typed mock data in `src/data/` — no backend
+3. Single source of truth for artisan data (avoid list/detail drift)
+
+## Screen
+
+- Route: `src/app/artisan/[id].tsx`
+- Sections: hero, about, stats, portfolio, reviews, contact, billing (optional), sticky Book Now footer
+- Invalid id → not found state with back navigation
+
+## UI
+
+- Mature neutral styling — no per-category rainbow colors, no emoji icons
+- Icons in `src/components/icons.tsx` only
+- NativeWind + StyleSheet exceptions per AGENTS.md
+- Dark mode required
+
+## Navigation
+
+- Book Now on `ArtisanCard` → `router.push(\`/artisan/${id}\`)`
+
+## Done when
+
+- All artisans have rich detail data
+- Detail screen complete and wired from dashboard
+- Lint passes

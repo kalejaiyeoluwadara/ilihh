@@ -1,0 +1,41 @@
+---
+description: Client booking flow — Book Now form, store, and Bookings tab rules
+globs: src/app/artisan/[id]/book.tsx,src/app/artisan/[id]/index.tsx,src/store/use-booking-store.ts,src/types/booking.ts,src/lib/booking-validation.ts,src/components/booking-*.tsx,src/components/client-booking*.tsx,src/components/client-bookings.tsx,docs/booking-feature.md
+alwaysApply: false
+---
+
+# Booking — Agent Rules
+
+**Full spec:** [docs/booking-feature.md](../../docs/booking-feature.md)  
+**Global rules:** [AGENTS.md](../../AGENTS.md)
+
+## Before coding
+
+1. Read `docs/booking-feature.md` and `AGENTS.md`
+2. Auth required before booking — guests redirect to login with `redirect` param
+3. No backend — Zustand + AsyncStorage via `safeStorage`
+
+## Routes
+
+- Detail: `src/app/artisan/[id]/index.tsx`
+- Booking form: `src/app/artisan/[id]/book.tsx`
+
+## Store
+
+- `useBookingStore` — persist `ClientBooking[]`
+- Filter bookings by `clientId` in UI
+- New bookings start as `pending`
+
+## UI
+
+- Reuse `AuthTextInput`, `PrimaryButton`, `AuthScreenLayout`
+- Icons in `src/components/icons.tsx` only
+- NativeWind + StyleSheet exceptions per AGENTS.md
+- Dark mode required
+
+## Done when
+
+- Book Now opens booking form (with auth gate)
+- Submit creates persisted booking
+- Client Bookings tab lists user's bookings
+- Lint passes

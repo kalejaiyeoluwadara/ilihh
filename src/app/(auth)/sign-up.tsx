@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Text, TouchableOpacity, View, useColorScheme } from 'react-native';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { AuthScreenLayout } from '@/components/auth-screen-layout';
 import { AuthTextInput } from '@/components/auth-text-input';
@@ -10,6 +10,7 @@ import { PrimaryButton } from '@/components/primary-button';
 import { RoleSelector } from '@/components/role-selector';
 import { images } from '@/constants/images';
 import { validateSignUp } from '@/lib/auth-validation';
+import { getRedirectHref } from '@/lib/navigation';
 import { useAuthStore } from '@/store/use-auth-store';
 import type { AuthValidationErrors } from '@/types/auth';
 import type { UserRole } from '@/types/user';
@@ -18,6 +19,7 @@ export default function SignUpScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const signUp = useAuthStore((state) => state.signUp);
+  const { redirect } = useLocalSearchParams<{ redirect?: string }>();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -63,7 +65,7 @@ export default function SignUpScreen() {
       return;
     }
 
-    router.replace('/');
+    router.replace(getRedirectHref(redirect));
   };
 
   return (
@@ -171,7 +173,14 @@ export default function SignUpScreen() {
         <Text className="font-poppins text-sm text-text-secondary dark:text-slate-400">
           Already have an account?{' '}
         </Text>
-        <TouchableOpacity onPress={() => router.push('/login')} activeOpacity={0.7}>
+        <TouchableOpacity
+          onPress={() =>
+            router.push(
+              redirect ? `/login?redirect=${encodeURIComponent(String(redirect))}` : '/login'
+            )
+          }
+          activeOpacity={0.7}
+        >
           <Text className="font-poppins-semibold text-sm text-primary-purple dark:text-indigo-400">
             Sign in
           </Text>
