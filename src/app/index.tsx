@@ -4,10 +4,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { images } from '@/constants/images';
 import { WebBadge } from '@/components/web-badge';
+import { useAppStore } from '@/store/use-app-store';
 
 export default function DesignSystemScreen() {
   const systemColorScheme = useColorScheme();
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
+  const resetOnboarding = useAppStore((state) => state.resetOnboarding);
 
   const toggleTheme = () => {
     Appearance.setColorScheme(
@@ -38,15 +40,26 @@ export default function DesignSystemScreen() {
               Active Design System Specimen
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={toggleTheme}
-            activeOpacity={0.8}
-            className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl"
-          >
-            <Text className="font-poppins-semibold text-xs text-slate-700 dark:text-slate-200">
-              Toggle Theme ({systemColorScheme})
-            </Text>
-          </TouchableOpacity>
+          <View className="flex-row gap-2">
+            <TouchableOpacity
+              onPress={resetOnboarding}
+              activeOpacity={0.8}
+              className="px-4 py-2 bg-primary-purple/10 rounded-xl"
+            >
+              <Text className="font-poppins-semibold text-xs text-primary-purple">
+                Reset Onboarding
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={toggleTheme}
+              activeOpacity={0.8}
+              className="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl"
+            >
+              <Text className="font-poppins-semibold text-xs text-slate-700 dark:text-slate-200">
+                Toggle Theme ({systemColorScheme})
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent}>

@@ -121,14 +121,15 @@ const styles = StyleSheet.create({
   },
   background: {
     borderRadius: 40,
-    experimental_backgroundImage: `linear-gradient(180deg, #3C9FFE, #0274DF)`,
+    backgroundColor: '#6C4EF5',
+    experimental_backgroundImage: `linear-gradient(180deg, #818CF8, #6C4EF5)`,
     width: 128,
     height: 128,
     position: 'absolute',
   },
   backgroundSolidColor: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#208AEF',
+    backgroundColor: '#6C4EF5',
     zIndex: 1000,
   },
 });
