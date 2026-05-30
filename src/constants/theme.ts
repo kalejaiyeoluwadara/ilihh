@@ -9,47 +9,53 @@ import { Platform } from 'react-native';
 
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    primary: '#6C4EF5',
+    primaryDeep: '#5B3BF6',
+    primaryBlue: '#4D8BFF',
+    primaryGreen: '#21C16B',
+    success: '#21C16B',
+    warning: '#FFC800',
+    streak: '#FF8A00',
+    danger: '#FF4D4F',
+    info: '#4D8BFF',
+    text: '#0D132B',
+    background: '#FFFFFF',
+    backgroundElement: '#F6F7FB',
+    backgroundSelected: '#E5E7EB',
+    textSecondary: '#6B7280',
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    primary: '#818CF8',
+    primaryDeep: '#7257F7',
+    primaryBlue: '#66A0FF',
+    primaryGreen: '#3BE387',
+    success: '#3BE387',
+    warning: '#FFD633',
+    streak: '#FF9F33',
+    danger: '#FF6B6D',
+    info: '#66A0FF',
+    text: '#F1F5F9',
+    background: '#0A0E1A',
+    backgroundElement: '#161F38',
+    backgroundSelected: '#232E4E',
+    textSecondary: '#94A3B8',
   },
 } as const;
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+export const Fonts = {
+  poppins: 'Poppins-Regular',
+  medium: 'Poppins-Medium',
+  semibold: 'Poppins-SemiBold',
+  bold: 'Poppins-Bold',
+  mono: Platform.select({
+    ios: 'ui-monospace',
+    android: 'monospace',
+    default: 'monospace',
+    web: 'var(--font-mono)',
+  }) ?? 'monospace',
+};
 
 export const Spacing = {
   half: 2,
