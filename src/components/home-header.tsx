@@ -3,11 +3,11 @@ import { Image } from 'expo-image';
 import { images } from '@/constants/images';
 
 interface HomeHeaderProps {
-  userRole: 'client' | 'artisan';
-  onToggleRole: () => void;
+  onNotificationPress?: () => void;
+  onLoginPress?: () => void;
 }
 
-export function HomeHeader({ userRole, onToggleRole }: HomeHeaderProps) {
+export function HomeHeader({ onNotificationPress, onLoginPress }: HomeHeaderProps) {
   return (
     <View className="flex-row justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-900">
       <View className="flex-row items-center gap-3">
@@ -28,41 +28,27 @@ export function HomeHeader({ userRole, onToggleRole }: HomeHeaderProps) {
         </View>
       </View>
 
-      {/* Toggle Role Pill Switcher */}
-      <View className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 flex-row rounded-full h-10 w-36 relative">
+      {/* Right Actions: Bell + Login */}
+      <View className="flex-row items-center gap-3">
+        {/* Notification Bell */}
         <TouchableOpacity
-          onPress={() => userRole !== 'client' && onToggleRole()}
-          activeOpacity={0.9}
-          className={`flex-1 items-center justify-center rounded-full ${
-            userRole === 'client'
-              ? 'bg-primary-purple shadow-sm shadow-primary-purple/35'
-              : ''
-          }`}
+          onPress={onNotificationPress}
+          activeOpacity={0.7}
+          className="w-10 h-10 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl items-center justify-center relative"
         >
-          <Text
-            className={`font-poppins-semibold text-xs ${
-              userRole === 'client' ? 'text-white' : 'text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            Client
-          </Text>
+          <Text className="text-lg">🔔</Text>
+          {/* Active notification dot */}
+          <View className="absolute top-1.5 right-2 w-2 h-2 bg-danger rounded-full border border-white dark:border-slate-900" />
         </TouchableOpacity>
 
+        {/* Login / Sign Up Button */}
         <TouchableOpacity
-          onPress={() => userRole !== 'artisan' && onToggleRole()}
-          activeOpacity={0.9}
-          className={`flex-1 items-center justify-center rounded-full ${
-            userRole === 'artisan'
-              ? 'bg-primary-purple shadow-sm shadow-primary-purple/35'
-              : ''
-          }`}
+          onPress={onLoginPress}
+          activeOpacity={0.8}
+          className="bg-primary-purple px-4 py-2.5 rounded-2xl shadow-sm shadow-primary-purple/25"
         >
-          <Text
-            className={`font-poppins-semibold text-xs ${
-              userRole === 'artisan' ? 'text-white' : 'text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            Artisan
+          <Text className="font-poppins-semibold text-xs text-white">
+            Login
           </Text>
         </TouchableOpacity>
       </View>

@@ -56,7 +56,7 @@ export default function HomeScreen() {
     <View className="flex-1 bg-white dark:bg-slate-950">
       <SafeAreaView style={styles.safeArea}>
         {/* Navigation / Header Bar */}
-        <HomeHeader userRole={userRole} onToggleRole={toggleUserRole} />
+        <HomeHeader />
 
         {/* Render View Based on Active Role */}
         {userRole === 'client' ? (
@@ -82,11 +82,42 @@ export default function HomeScreen() {
           />
         )}
 
-        {/* Testing Footer bar with Reset Onboarding helper */}
+        {/* Testing Footer bar with Role Toggle & Reset helpers */}
         <View className="px-6 py-3 border-t border-slate-100 dark:border-slate-900 flex-row justify-between items-center bg-slate-50/50 dark:bg-slate-950/20">
-          <Text className="font-poppins text-[10px] text-text-secondary dark:text-slate-500">
-            Teaching Mode • Dual Layout
-          </Text>
+          {/* Role Toggle for development testing */}
+          <View className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-0.5 flex-row rounded-full h-7 w-28">
+            <TouchableOpacity
+              onPress={() => userRole !== 'client' && toggleUserRole()}
+              activeOpacity={0.9}
+              className={`flex-1 items-center justify-center rounded-full ${
+                userRole === 'client' ? 'bg-primary-purple' : ''
+              }`}
+            >
+              <Text
+                className={`font-poppins-semibold text-[9px] ${
+                  userRole === 'client' ? 'text-white' : 'text-slate-500 dark:text-slate-400'
+                }`}
+              >
+                Client
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => userRole !== 'artisan' && toggleUserRole()}
+              activeOpacity={0.9}
+              className={`flex-1 items-center justify-center rounded-full ${
+                userRole === 'artisan' ? 'bg-primary-purple' : ''
+              }`}
+            >
+              <Text
+                className={`font-poppins-semibold text-[9px] ${
+                  userRole === 'artisan' ? 'text-white' : 'text-slate-500 dark:text-slate-400'
+                }`}
+              >
+                Artisan
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           <TouchableOpacity onPress={resetOnboarding}>
             <Text className="font-poppins-medium text-[10px] text-primary-purple dark:text-indigo-400 underline">
               Reset Onboarding

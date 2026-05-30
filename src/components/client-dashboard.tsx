@@ -93,15 +93,22 @@ export function ClientDashboard({
                 key={category.id}
                 onPress={() => setSelectedCategory(isSelected ? null : category.id)}
                 activeOpacity={0.7}
-                className={`flex-row items-center px-4 py-3 rounded-2xl border mr-3 gap-2 ${
+                className={`flex-row items-center px-4 py-2.5 rounded-full border mr-3 gap-2 ${
                   isSelected
-                    ? 'bg-primary-purple border-primary-purple shadow-sm shadow-primary-purple/35'
-                    : `${category.bgClass} ${category.borderClass}`
+                    ? 'bg-primary-purple border-primary-purple shadow-sm shadow-primary-purple/25'
+                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800'
                 }`}
               >
+                {/* Color accent dot */}
+                <View
+                  className={`w-2 h-2 rounded-full ${
+                    isSelected ? 'bg-white/60' : ''
+                  }`}
+                  style={!isSelected ? { backgroundColor: category.dotColor } : undefined}
+                />
                 <Text
                   className={`font-poppins-semibold text-xs ${
-                    isSelected ? 'text-white' : category.textClass
+                    isSelected ? 'text-white' : 'text-text-primary dark:text-slate-200'
                   }`}
                 >
                   {category.name}
