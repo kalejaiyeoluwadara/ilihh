@@ -1,0 +1,43 @@
+---
+description: Auth feature rules for login, sign-up, session, and (auth) routes in ilihh
+globs: src/app/(auth)/**/*,src/store/use-auth-store.ts,src/lib/auth-validation.ts,src/types/user.ts,src/types/auth.ts,src/components/auth-*.tsx,docs/auth-feature.md
+alwaysApply: false
+---
+
+# Auth Pages — Agent Rules
+
+**Full spec:** [docs/auth-feature.md](../../docs/auth-feature.md)  
+**Global rules:** [AGENTS.md](../../AGENTS.md)
+
+## Before coding
+
+1. Read `docs/auth-feature.md` and `AGENTS.md`
+2. Confirm guest vs required auth and whether design images exist
+3. Do not add auth backend libraries without user approval
+
+## Architecture
+
+- Routes live in `src/app/(auth)/` — screens compose components only
+- Mock auth via Zustand + AsyncStorage (reuse `safeStorage` pattern from `use-app-store.ts`)
+- Types in `src/types/` — no `any`
+- Validation in `src/lib/auth-validation.ts` — pure functions
+
+## UI
+
+- NativeWind v5 for styling; StyleSheet for SafeAreaView, KeyboardAvoidingView, ScrollView contentContainerStyle, TextInput platform props, shadows
+- Icons in `src/components/icons.tsx` only — no emoji, no inline SVG
+- Images via `src/constants/images.ts`
+- Match provided designs pixel-perfectly; otherwise follow onboarding/profile patterns (purple CTA, rounded-2xl, Poppins)
+
+## Store
+
+- `isAuthenticated`, `user`, `registeredUsers` for demo persistence
+- On login/sign-up: sync `userRole` with `useAppStore`
+- Logout clears session, not onboarding
+
+## Done when
+
+- Login + sign-up work end-to-end with persistence
+- Header/profile use real user data (not hardcoded "Dara")
+- `npm run lint` passes
+- Manual QA from docs/auth-feature.md completed

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { StyleSheet, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 
 import { useAppStore } from '@/store/use-app-store';
+import { useAuthStore } from '@/store/use-auth-store';
 import { ARTISANS, MOCK_BOOKING_REQUESTS, MOCK_STATS } from '@/data/artisans';
 import { ClientDashboard } from '@/components/client-dashboard';
 import { ArtisanDashboard } from '@/components/artisan-dashboard';
@@ -22,6 +24,23 @@ export default function HomeScreen() {
 
   // Zustand Store
   const { userRole, toggleUserRole, resetOnboarding } = useAppStore();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const updateUserRole = useAuthStore((state) => state.updateUserRole);
+
+  const handleToggleRole = () => {
+    if (isAuthenticated && user) {
+      updateUserRole(user.role === 'client' ? 'artisan' : 'client');
+      return;
+    }
+
+    toggleUserRole();
+  };
+
+  const handleLoginPress = () => {
+    router.push('/login');
+  };
 
   // Separate tab states to avoid calling setState in useEffect (fixes lint error)
   const [activeClientTab, setActiveClientTab] = useState<'home' | 'bookings' | 'messages' | 'profile'>('home');
@@ -80,7 +99,14 @@ export default function HomeScreen() {
     <View className="flex-1 bg-white dark:bg-slate-950">
       <SafeAreaView style={styles.safeArea}>
         {/* Navigation / Header Bar (only visible on Home/Dashboard tabs) */}
-        {showHeader && <HomeHeader />}
+        {showHeader && (
+          <HomeHeader
+            userName={user?.fullName ?? 'Guest'}
+            userLocation={user?.location ?? 'Ilisan, Ogun State'}
+            isAuthenticated={isAuthenticated}
+            onLoginPress={handleLoginPress}
+          />
+        )}
 
         {/* Render View Based on Active Role and Tab */}
         {userRole === 'client' ? (
@@ -99,9 +125,14 @@ export default function HomeScreen() {
             <ClientMessages />
           ) : (
             <ClientProfile
+              isAuthenticated={isAuthenticated}
+              userName={user?.fullName}
+              userLocation={user?.location}
               userRole={userRole}
-              onToggleRole={toggleUserRole}
+              onToggleRole={handleToggleRole}
               onResetOnboarding={resetOnboarding}
+              onLogout={logout}
+              onLoginPress={handleLoginPress}
             />
           )
         ) : (
@@ -123,9 +154,14 @@ export default function HomeScreen() {
             <ArtisanMessages />
           ) : (
             <ArtisanProfile
+              isAuthenticated={isAuthenticated}
+              userName={user?.fullName}
+              userLocation={user?.location}
               userRole={userRole}
-              onToggleRole={toggleUserRole}
+              onToggleRole={handleToggleRole}
               onResetOnboarding={resetOnboarding}
+              onLogout={logout}
+              onLoginPress={handleLoginPress}
             />
           )
         )}

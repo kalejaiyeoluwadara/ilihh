@@ -4,12 +4,26 @@ import { Image } from 'expo-image';
 import { images } from '@/constants/images';
 
 interface ClientProfileProps {
+  isAuthenticated: boolean;
+  userName?: string;
+  userLocation?: string;
   userRole: 'client' | 'artisan';
   onToggleRole: () => void;
   onResetOnboarding: () => void;
+  onLogout?: () => void;
+  onLoginPress?: () => void;
 }
 
-export function ClientProfile({ userRole, onToggleRole, onResetOnboarding }: ClientProfileProps) {
+export function ClientProfile({
+  isAuthenticated,
+  userName = 'Guest',
+  userLocation = 'Ilisan, Ogun State',
+  userRole,
+  onToggleRole,
+  onResetOnboarding,
+  onLogout,
+  onLoginPress,
+}: ClientProfileProps) {
   return (
     <ScrollView 
       style={styles.container}
@@ -24,22 +38,33 @@ export function ClientProfile({ userRole, onToggleRole, onResetOnboarding }: Cli
             style={styles.avatar}
             contentFit="cover"
           />
-          <View className="absolute bottom-0 right-0 bg-primary-green w-4 h-4 rounded-full border-2 border-white dark:border-slate-900" />
+          {isAuthenticated ? (
+            <View className="absolute bottom-0 right-0 bg-primary-green w-4 h-4 rounded-full border-2 border-white dark:border-slate-900" />
+          ) : null}
         </View>
         
         <Text className="font-poppins-bold text-lg text-text-primary dark:text-slate-50 mt-4">
-          Dara
+          {userName}
         </Text>
         <Text className="font-poppins text-xs text-text-secondary dark:text-slate-400 mt-1">
-          Client Account • Ilisan, Ogun State
+          {isAuthenticated ? `Client Account • ${userLocation}` : 'Sign in to save your profile and bookings'}
         </Text>
 
-        {/* Small badge for role */}
         <View className="bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1 rounded-full mt-3">
           <Text className="font-poppins-semibold text-[10px] text-primary-purple dark:text-indigo-400">
             CLIENT
           </Text>
         </View>
+
+        {!isAuthenticated ? (
+          <TouchableOpacity
+            onPress={onLoginPress}
+            activeOpacity={0.8}
+            className="mt-5 w-full items-center rounded-2xl bg-primary-purple py-3"
+          >
+            <Text className="font-poppins-semibold text-sm text-white">Sign In or Create Account</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       {/* Settings Sections */}
@@ -72,7 +97,7 @@ export function ClientProfile({ userRole, onToggleRole, onResetOnboarding }: Cli
         <TouchableOpacity
           onPress={onResetOnboarding}
           activeOpacity={0.7}
-          className="flex-row justify-between items-center px-5 py-4"
+          className={`flex-row justify-between items-center px-5 py-4 ${isAuthenticated ? 'border-b border-slate-100/50 dark:border-slate-800/50' : ''}`}
         >
           <View className="flex-row items-center gap-3">
             <Text className="text-lg">🔁</Text>
@@ -87,6 +112,27 @@ export function ClientProfile({ userRole, onToggleRole, onResetOnboarding }: Cli
           </View>
           <Text className="text-slate-400 dark:text-slate-600 text-xs">➔</Text>
         </TouchableOpacity>
+
+        {isAuthenticated ? (
+          <TouchableOpacity
+            onPress={onLogout}
+            activeOpacity={0.7}
+            className="flex-row justify-between items-center px-5 py-4"
+          >
+            <View className="flex-row items-center gap-3">
+              <Text className="text-lg">🚪</Text>
+              <View>
+                <Text className="font-poppins-semibold text-xs text-danger">
+                  Log Out
+                </Text>
+                <Text className="font-poppins text-[10px] text-text-secondary dark:text-slate-400 mt-0.5">
+                  Sign out of your ilihh account
+                </Text>
+              </View>
+            </View>
+            <Text className="text-slate-400 dark:text-slate-600 text-xs">➔</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <Text className="font-poppins-semibold text-xs text-text-secondary dark:text-slate-500 uppercase tracking-wider mb-3 px-1">

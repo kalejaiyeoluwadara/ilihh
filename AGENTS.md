@@ -446,11 +446,22 @@ Use:
 
 ---
 
+## Feature Documentation
+
+Some features have dedicated agent docs with scope, architecture, and checklists. Read them **in addition to** this file when working on that feature:
+
+| Feature | Documentation |
+| ------- | ------------- |
+| Authentication (login, sign-up, session) | [docs/auth-feature.md](./docs/auth-feature.md) |
+
+---
+
 ## Final Reminder
 
 Before every feature implementation:
 
 - Read this file
+- Read the feature doc if one exists for your task
 - Follow it strictly
 - Build clean, simple, teachable code
 - Replicate UI exactly when designs are provided

@@ -3,11 +3,20 @@ import { Image } from 'expo-image';
 import { images } from '@/constants/images';
 
 interface HomeHeaderProps {
+  userName?: string;
+  userLocation?: string;
+  isAuthenticated?: boolean;
   onNotificationPress?: () => void;
   onLoginPress?: () => void;
 }
 
-export function HomeHeader({ onNotificationPress, onLoginPress }: HomeHeaderProps) {
+export function HomeHeader({
+  userName = 'Guest',
+  userLocation = 'Ilisan, Ogun State',
+  isAuthenticated = false,
+  onNotificationPress,
+  onLoginPress,
+}: HomeHeaderProps) {
   return (
     <View className="flex-row justify-between items-center px-6 py-4 border-b border-slate-100 dark:border-slate-900">
       <View className="flex-row items-center gap-3">
@@ -18,39 +27,35 @@ export function HomeHeader({ onNotificationPress, onLoginPress }: HomeHeaderProp
         />
         <View>
           <Text className="font-poppins-bold text-base text-text-primary dark:text-slate-50">
-            Dara
+            {userName}
           </Text>
           <View className="flex-row items-center gap-1 mt-0.5">
             <Text className="font-poppins text-[10px] text-text-secondary dark:text-slate-400">
-              Ilisan, Ogun State
+              {userLocation}
             </Text>
           </View>
         </View>
       </View>
 
-      {/* Right Actions: Bell + Login */}
       <View className="flex-row items-center gap-3">
-        {/* Notification Bell */}
         <TouchableOpacity
           onPress={onNotificationPress}
           activeOpacity={0.7}
           className="w-10 h-10 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl items-center justify-center relative"
         >
           <Text className="text-lg">🔔</Text>
-          {/* Active notification dot */}
           <View className="absolute top-1.5 right-2 w-2 h-2 bg-danger rounded-full border border-white dark:border-slate-900" />
         </TouchableOpacity>
 
-        {/* Login / Sign Up Button */}
-        <TouchableOpacity
-          onPress={onLoginPress}
-          activeOpacity={0.8}
-          className="bg-primary-purple px-4 py-2.5 rounded-2xl shadow-sm shadow-primary-purple/25"
-        >
-          <Text className="font-poppins-semibold text-xs text-white">
-            Login
-          </Text>
-        </TouchableOpacity>
+        {!isAuthenticated ? (
+          <TouchableOpacity
+            onPress={onLoginPress}
+            activeOpacity={0.8}
+            className="bg-primary-purple px-4 py-2.5 rounded-2xl shadow-sm shadow-primary-purple/25"
+          >
+            <Text className="font-poppins-semibold text-xs text-white">Login</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     </View>
   );
