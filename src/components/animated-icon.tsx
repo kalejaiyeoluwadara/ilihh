@@ -1,8 +1,7 @@
 import { Image } from 'expo-image';
-import { useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import Animated, { Easing, Keyframe } from 'react-native-reanimated';
-import { scheduleOnRN } from 'react-native-worklets';
+import * as React from 'react';
+import { Dimensions, Text as RNText, StyleSheet, View } from 'react-native';
+import Animated, { Easing, FadeOut, Keyframe, ZoomIn } from 'react-native-reanimated';
 
 import { images } from '@/constants/images';
 
@@ -10,39 +9,39 @@ const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;
 
 export function AnimatedSplashOverlay() {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = React.useState(true);
+
+  React.useEffect(() => {
+    // Hold splash screen for 2.5 seconds, then fade out
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!visible) return null;
 
-  const splashKeyframe = new Keyframe({
-    0: {
-      transform: [{ scale: INITIAL_SCALE_FACTOR }],
-      opacity: 1,
-    },
-    20: {
-      opacity: 1,
-    },
-    70: {
-      opacity: 0,
-      easing: Easing.elastic(0.7),
-    },
-    100: {
-      opacity: 0,
-      transform: [{ scale: 1 }],
-      easing: Easing.elastic(0.7),
-    },
-  });
-
   return (
     <Animated.View
-      entering={splashKeyframe.duration(DURATION).withCallback((finished) => {
-        'worklet';
-        if (finished) {
-          scheduleOnRN(setVisible, false);
-        }
-      })}
-      style={styles.backgroundSolidColor}
-    />
+      exiting={FadeOut.duration(500)}
+      className="absolute inset-0 bg-[#6C4EF5] justify-center items-center z-[9999]"
+    >
+      <View className="justify-center items-center">
+        {/* Xcode-style logo container */}
+        <Animated.View
+          entering={ZoomIn.duration(600).easing(Easing.out(Easing.quad))}
+          className="w-[140px] h-[140px] rounded-[36px] p-1.5 justify-center items-center mb-6"
+          style={styles.logoWrapperShadow}
+        >
+          <Image source={images.artisanLogo} style={styles.logoImage} />
+        </Animated.View>
+
+        {/* Brand Text */}
+        <RNText className="font-poppins-bold text-[40px] text-white tracking-[-1px]">
+          Ilihh
+        </RNText>
+      </View>
+    </Animated.View>
   );
 }
 
@@ -84,52 +83,45 @@ const glowKeyframe = new Keyframe({
 
 export function AnimatedIcon() {
   return (
-    <View style={styles.iconContainer}>
-      <Animated.View entering={glowKeyframe.duration(60 * 1000 * 4)} style={styles.glow}>
-        <Image style={styles.glow} source={require('@/assets/images/logo-glow.png')} />
+    <View className="justify-center items-center w-32 h-32 z-[100]">
+      <Animated.View entering={glowKeyframe.duration(60 * 1000 * 4)} className="absolute w-[201px] h-[201px]">
+        <Image style={styles.glowImage} source={require('@/assets/images/logo-glow.png')} />
       </Animated.View>
 
-      <Animated.View entering={keyframe.duration(DURATION)} style={styles.background} />
-      <Animated.View style={styles.imageContainer} entering={logoKeyframe.duration(DURATION)}>
-        <Image style={styles.image} source={images.artisanLogo} />
+      <Animated.View
+        entering={keyframe.duration(DURATION)}
+        className="absolute w-32 h-32 rounded-[40px] bg-[#6C4EF5] web:bg-gradient-to-b web:from-[#818CF8] web:to-[#6C4EF5]"
+      />
+      <Animated.View
+        className="justify-center items-center"
+        entering={logoKeyframe.duration(DURATION)}
+      >
+        <Image style={styles.logoImageInner} source={images.artisanLogo} />
       </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  imageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+  logoWrapperShadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 10,
   },
-  glow: {
-    width: 201,
-    height: 201,
-    position: 'absolute',
+  logoImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 30,
   },
-  iconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 128,
-    height: 128,
-    zIndex: 100,
+  glowImage: {
+    width: '100%',
+    height: '100%',
   },
-  image: {
+  logoImageInner: {
     position: 'absolute',
     width: 76,
     height: 71,
-  },
-  background: {
-    borderRadius: 40,
-    backgroundColor: '#6C4EF5',
-    experimental_backgroundImage: `linear-gradient(180deg, #818CF8, #6C4EF5)`,
-    width: 128,
-    height: 128,
-    position: 'absolute',
-  },
-  backgroundSolidColor: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: '#6C4EF5',
-    zIndex: 1000,
   },
 });

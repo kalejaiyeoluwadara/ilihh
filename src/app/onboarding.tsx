@@ -10,7 +10,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SLIDES = [
   {
     title: 'Find Local Experts',
-    description: 'Connect with skilled local artisans in Barangay Ilisan—from master carpenters and plumbers to tailors and builders.',
+    description: 'Connect with skilled local artisans in Ilisan—from master carpenters and plumbers to tailors and builders.',
     image: images.onboardingTools,
   },
   {
@@ -156,5 +156,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH * 0.8,
     height: SCREEN_WIDTH * 0.8,
     maxHeight: 300,
+    borderRadius: 72,
+    ...({ cornerCurve: 'continuous' } as any),
   },
 });
