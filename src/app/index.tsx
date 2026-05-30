@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, useColorScheme } from 'react-native';
+import { StyleSheet, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppStore } from '@/store/use-app-store';
@@ -8,12 +8,33 @@ import { ClientDashboard } from '@/components/client-dashboard';
 import { ArtisanDashboard } from '@/components/artisan-dashboard';
 import { HomeHeader } from '@/components/home-header';
 
+import { ClientBookings } from '@/components/client-bookings';
+import { ClientMessages } from '@/components/client-messages';
+import { ClientProfile } from '@/components/client-profile';
+import { ArtisanTasks } from '@/components/artisan-tasks';
+import { ArtisanMessages } from '@/components/artisan-messages';
+import { ArtisanProfile } from '@/components/artisan-profile';
+import { BottomNavBar } from '@/components/bottom-nav-bar';
+
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
   // Zustand Store
   const { userRole, toggleUserRole, resetOnboarding } = useAppStore();
+
+  // Separate tab states to avoid calling setState in useEffect (fixes lint error)
+  const [activeClientTab, setActiveClientTab] = useState<'home' | 'bookings' | 'messages' | 'profile'>('home');
+  const [activeArtisanTab, setActiveArtisanTab] = useState<'dashboard' | 'tasks' | 'messages' | 'profile'>('dashboard');
+
+  const activeTab = userRole === 'client' ? activeClientTab : activeArtisanTab;
+  const setActiveTab = (tabId: any) => {
+    if (userRole === 'client') {
+      setActiveClientTab(tabId);
+    } else {
+      setActiveArtisanTab(tabId);
+    }
+  };
 
   // Local State for Client view
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,78 +73,69 @@ export default function HomeScreen() {
     setBookingRequests((prev) => prev.map((req) => (req.id === id ? { ...req, status: 'declined' } : req)));
   };
 
+  // Determine if header should be visible on the active tab
+  const showHeader = activeTab === 'home' || activeTab === 'dashboard';
+
   return (
     <View className="flex-1 bg-white dark:bg-slate-950">
       <SafeAreaView style={styles.safeArea}>
-        {/* Navigation / Header Bar */}
-        <HomeHeader />
+        {/* Navigation / Header Bar (only visible on Home/Dashboard tabs) */}
+        {showHeader && <HomeHeader />}
 
-        {/* Render View Based on Active Role */}
+        {/* Render View Based on Active Role and Tab */}
         {userRole === 'client' ? (
-          <ClientDashboard
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            filteredArtisans={filteredArtisans}
-            isDark={isDark}
-          />
+          activeTab === 'home' ? (
+            <ClientDashboard
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              filteredArtisans={filteredArtisans}
+              isDark={isDark}
+            />
+          ) : activeTab === 'bookings' ? (
+            <ClientBookings onBrowsePress={() => setActiveTab('home')} />
+          ) : activeTab === 'messages' ? (
+            <ClientMessages />
+          ) : (
+            <ClientProfile
+              userRole={userRole}
+              onToggleRole={toggleUserRole}
+              onResetOnboarding={resetOnboarding}
+            />
+          )
         ) : (
-          <ArtisanDashboard
-            isOnline={isOnline}
-            setIsOnline={setIsOnline}
-            bookingRequests={bookingRequests}
-            earnings={earnings}
-            activeJobsCount={activeJobsCount}
-            completedJobsThisMonth={MOCK_STATS.completedJobsThisMonth}
-            rating={MOCK_STATS.rating}
-            onAcceptBooking={handleAcceptBooking}
-            onDeclineBooking={handleDeclineBooking}
-          />
+          activeTab === 'dashboard' ? (
+            <ArtisanDashboard
+              isOnline={isOnline}
+              setIsOnline={setIsOnline}
+              bookingRequests={bookingRequests}
+              earnings={earnings}
+              activeJobsCount={activeJobsCount}
+              completedJobsThisMonth={MOCK_STATS.completedJobsThisMonth}
+              rating={MOCK_STATS.rating}
+              onAcceptBooking={handleAcceptBooking}
+              onDeclineBooking={handleDeclineBooking}
+            />
+          ) : activeTab === 'tasks' ? (
+            <ArtisanTasks />
+          ) : activeTab === 'messages' ? (
+            <ArtisanMessages />
+          ) : (
+            <ArtisanProfile
+              userRole={userRole}
+              onToggleRole={toggleUserRole}
+              onResetOnboarding={resetOnboarding}
+            />
+          )
         )}
 
-        {/* Testing Footer bar with Role Toggle & Reset helpers */}
-        <View className="px-6 py-3 border-t border-slate-100 dark:border-slate-900 flex-row justify-between items-center bg-slate-50/50 dark:bg-slate-950/20">
-          {/* Role Toggle for development testing */}
-          <View className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-0.5 flex-row rounded-full h-7 w-28">
-            <TouchableOpacity
-              onPress={() => userRole !== 'client' && toggleUserRole()}
-              activeOpacity={0.9}
-              className={`flex-1 items-center justify-center rounded-full ${
-                userRole === 'client' ? 'bg-primary-purple' : ''
-              }`}
-            >
-              <Text
-                className={`font-poppins-semibold text-[9px] ${
-                  userRole === 'client' ? 'text-white' : 'text-slate-500 dark:text-slate-400'
-                }`}
-              >
-                Client
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => userRole !== 'artisan' && toggleUserRole()}
-              activeOpacity={0.9}
-              className={`flex-1 items-center justify-center rounded-full ${
-                userRole === 'artisan' ? 'bg-primary-purple' : ''
-              }`}
-            >
-              <Text
-                className={`font-poppins-semibold text-[9px] ${
-                  userRole === 'artisan' ? 'text-white' : 'text-slate-500 dark:text-slate-400'
-                }`}
-              >
-                Artisan
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity onPress={resetOnboarding}>
-            <Text className="font-poppins-medium text-[10px] text-primary-purple dark:text-indigo-400 underline">
-              Reset Onboarding
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {/* Custom floating bottom navigation bar */}
+        <BottomNavBar
+          userRole={userRole}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
       </SafeAreaView>
     </View>
   );
