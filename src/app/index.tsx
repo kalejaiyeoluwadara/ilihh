@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import { useAppStore } from '@/store/use-app-store';
 import { useAuthStore } from '@/store/use-auth-store';
+import { useBookingStore } from '@/store/use-booking-store';
 import { ARTISANS, MOCK_BOOKING_REQUESTS, MOCK_STATS } from '@/data/artisans';
+import { buildArtisanTasks, buildDashboardRequests } from '@/lib/artisan-tasks';
 import { ClientDashboard } from '@/components/client-dashboard';
 import { ArtisanDashboard } from '@/components/artisan-dashboard';
 import { HomeHeader } from '@/components/home-header';
@@ -21,6 +23,7 @@ import { BottomNavBar } from '@/components/bottom-nav-bar';
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { tab } = useLocalSearchParams<{ tab?: string }>();
 
   // Zustand Store
   const { userRole, toggleUserRole, resetOnboarding } = useAppStore();
@@ -43,8 +46,16 @@ export default function HomeScreen() {
   };
 
   // Separate tab states to avoid calling setState in useEffect (fixes lint error)
-  const [activeClientTab, setActiveClientTab] = useState<'home' | 'bookings' | 'messages' | 'profile'>('home');
-  const [activeArtisanTab, setActiveArtisanTab] = useState<'dashboard' | 'tasks' | 'messages' | 'profile'>('dashboard');
+  const [activeClientTab, setActiveClientTab] = useState<
+    'home' | 'bookings' | 'messages' | 'profile'
+  >(() => (tab === 'bookings' ? 'bookings' : 'home'));
+  const [activeArtisanTab, setActiveArtisanTab] = useState<
+    'dashboard' | 'tasks' | 'messages' | 'profile'
+  >(() => (tab === 'tasks' ? 'tasks' : 'dashboard'));
+
+  const clientBookings = useBookingStore((state) => state.bookings);
+  const acceptClientBooking = useBookingStore((state) => state.acceptBooking);
+  const declineClientBooking = useBookingStore((state) => state.declineBooking);
 
   const activeTab = userRole === 'client' ? activeClientTab : activeArtisanTab;
   const setActiveTab = (tabId: any) => {
@@ -65,6 +76,16 @@ export default function HomeScreen() {
   const [activeJobsCount, setActiveJobsCount] = useState(MOCK_STATS.activeJobsCount);
   const [earnings, setEarnings] = useState(35000);
 
+  const dashboardRequests = useMemo(
+    () => buildDashboardRequests(bookingRequests, clientBookings),
+    [bookingRequests, clientBookings]
+  );
+
+  const artisanTasks = useMemo(
+    () => buildArtisanTasks(bookingRequests, clientBookings),
+    [bookingRequests, clientBookings]
+  );
+
   // Filter artisans based on category and search query
   const filteredArtisans = ARTISANS.filter((artisan) => {
     const matchesCategory = selectedCategory ? artisan.category === selectedCategory : true;
@@ -78,10 +99,16 @@ export default function HomeScreen() {
 
   // Handle booking actions in Artisan mode
   const handleAcceptBooking = (id: string, priceStr: string) => {
-    setBookingRequests((prev) => prev.map((req) => (req.id === id ? { ...req, status: 'accepted' } : req)));
+    if (id.startsWith('booking-')) {
+      acceptClientBooking(id);
+    } else {
+      setBookingRequests((prev) =>
+        prev.map((req) => (req.id === id ? { ...req, status: 'accepted' } : req))
+      );
+    }
+
     setActiveJobsCount((prev) => prev + 1);
 
-    // Parse price (e.g. ₦8,000) and add to mock earnings
     const numericPrice = parseInt(priceStr.replace(/[^0-9]/g, ''), 10);
     if (!isNaN(numericPrice)) {
       setEarnings((prev) => prev + numericPrice);
@@ -89,7 +116,14 @@ export default function HomeScreen() {
   };
 
   const handleDeclineBooking = (id: string) => {
-    setBookingRequests((prev) => prev.map((req) => (req.id === id ? { ...req, status: 'declined' } : req)));
+    if (id.startsWith('booking-')) {
+      declineClientBooking(id);
+      return;
+    }
+
+    setBookingRequests((prev) =>
+      prev.map((req) => (req.id === id ? { ...req, status: 'declined' } : req))
+    );
   };
 
   // Determine if header should be visible on the active tab
@@ -140,16 +174,17 @@ export default function HomeScreen() {
             <ArtisanDashboard
               isOnline={isOnline}
               setIsOnline={setIsOnline}
-              bookingRequests={bookingRequests}
+              bookingRequests={dashboardRequests}
               earnings={earnings}
               activeJobsCount={activeJobsCount}
               completedJobsThisMonth={MOCK_STATS.completedJobsThisMonth}
               rating={MOCK_STATS.rating}
               onAcceptBooking={handleAcceptBooking}
               onDeclineBooking={handleDeclineBooking}
+              onGoToTasks={() => setActiveTab('tasks')}
             />
           ) : activeTab === 'tasks' ? (
-            <ArtisanTasks />
+            <ArtisanTasks tasks={artisanTasks} />
           ) : activeTab === 'messages' ? (
             <ArtisanMessages />
           ) : (

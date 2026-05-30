@@ -8,7 +8,9 @@ import {
   View,
   useColorScheme,
 } from 'react-native';
-import { DateTimePicker } from '@expo/ui/community/datetime-picker';
+import DateTimePicker, {
+  type DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 
 import { CalendarIcon, ClockIcon } from '@/components/icons';
 import { formatBookingDate, formatBookingTime } from '@/lib/booking-format';
@@ -54,11 +56,13 @@ export function BookingDateTimeField({
     setShowPicker(true);
   };
 
-  const handlePickerChange = (_event: unknown, selectedDate: Date) => {
-    onChange(selectedDate);
-
+  const handlePickerChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
       setShowPicker(false);
+    }
+
+    if (event.type === 'set' && selectedDate) {
+      onChange(selectedDate);
     }
   };
 
@@ -93,7 +97,7 @@ export function BookingDateTimeField({
             value={pickerValue}
             mode={mode}
             display="spinner"
-            onValueChange={handlePickerChange}
+            onChange={handlePickerChange}
             minimumDate={mode === 'date' ? minimumDate : undefined}
             maximumDate={mode === 'date' ? maximumDate : undefined}
             themeVariant={isDark ? 'dark' : 'light'}
@@ -115,9 +119,7 @@ export function BookingDateTimeField({
         <DateTimePicker
           value={pickerValue}
           mode={mode}
-          presentation="dialog"
-          onValueChange={handlePickerChange}
-          onDismiss={() => setShowPicker(false)}
+          onChange={handlePickerChange}
           minimumDate={mode === 'date' ? minimumDate : undefined}
           maximumDate={mode === 'date' ? maximumDate : undefined}
           accentColor="#7C3AED"

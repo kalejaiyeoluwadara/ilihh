@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
+
 import { BookingRequest } from '@/data/artisans';
 
 interface BookingRequestCardProps {
@@ -10,19 +11,15 @@ interface BookingRequestCardProps {
 
 export function BookingRequestCard({ request, onAccept, onDecline }: BookingRequestCardProps) {
   return (
-    <View className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800/80 rounded-3xl p-4 mb-4">
-      <View className="flex-row items-center gap-3 mb-3">
-        <Image
-          source={{ uri: request.clientAvatar }}
-          style={styles.avatar}
-          contentFit="cover"
-        />
+    <View className="mb-4 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm shadow-slate-200/60 dark:border-slate-800/80 dark:bg-slate-900 dark:shadow-none">
+      <View className="mb-3 flex-row items-center gap-3">
+        <Image source={{ uri: request.clientAvatar }} style={styles.avatar} contentFit="cover" />
         <View className="flex-1">
           <Text className="font-poppins-bold text-sm text-text-primary dark:text-slate-50">
             {request.clientName}
           </Text>
           <Text className="font-poppins text-[11px] text-text-secondary dark:text-slate-400">
-            📍 {request.location} • 📅 {request.date}
+            {request.location} • {request.date}
           </Text>
         </View>
         <Text className="font-poppins-bold text-base text-primary-purple dark:text-indigo-400">
@@ -30,11 +27,11 @@ export function BookingRequestCard({ request, onAccept, onDecline }: BookingRequ
         </Text>
       </View>
 
-      <View className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-3 mb-4">
+      <View className="mb-4 rounded-2xl bg-slate-50 p-3 dark:bg-slate-800/50">
         <Text className="font-poppins-semibold text-xs text-text-primary dark:text-slate-200">
           {request.serviceNeeded}
         </Text>
-        <Text className="font-poppins text-xs text-text-secondary dark:text-slate-400 mt-1 leading-relaxed">
+        <Text className="mt-1 font-poppins text-xs leading-relaxed text-text-secondary dark:text-slate-400">
           {request.description}
         </Text>
       </View>
@@ -43,7 +40,7 @@ export function BookingRequestCard({ request, onAccept, onDecline }: BookingRequ
         <TouchableOpacity
           onPress={() => onDecline(request.id)}
           activeOpacity={0.8}
-          className="flex-1 bg-slate-100 dark:bg-slate-800 py-3 rounded-2xl items-center"
+          className="flex-1 items-center rounded-2xl bg-slate-100 py-3 dark:bg-slate-800"
         >
           <Text className="font-poppins-semibold text-xs text-slate-700 dark:text-slate-300">
             Decline
@@ -52,11 +49,9 @@ export function BookingRequestCard({ request, onAccept, onDecline }: BookingRequ
         <TouchableOpacity
           onPress={() => onAccept(request.id, request.price)}
           activeOpacity={0.8}
-          className="flex-1 bg-primary-purple py-3 rounded-2xl items-center"
+          className="flex-1 items-center rounded-2xl bg-primary-purple py-3"
         >
-          <Text className="font-poppins-semibold text-xs text-white">
-            Accept Job
-          </Text>
+          <Text className="font-poppins-semibold text-xs text-white">Accept Job</Text>
         </TouchableOpacity>
       </View>
     </View>

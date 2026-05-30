@@ -8,6 +8,7 @@ import { BookingArtisanSummary } from '@/components/booking-artisan-summary';
 import { BookingDateTimeField } from '@/components/booking-datetime-field';
 import { BackIcon } from '@/components/icons';
 import { PrimaryButton } from '@/components/primary-button';
+import { DEFAULT_CLIENT_AVATAR } from '@/lib/artisan-tasks';
 import { validateBookingForm } from '@/lib/booking-validation';
 import {
   formatBookingDate,
@@ -123,8 +124,10 @@ export default function BookArtisanScreen() {
       return;
     }
 
-    createBooking({
+    const booking = createBooking({
       clientId: user.id,
+      clientName: user.fullName,
+      clientAvatar: user.avatarUri ?? DEFAULT_CLIENT_AVATAR,
       artisanId: artisan.id,
       artisanName: artisan.name,
       artisanAvatar: artisan.avatar,
@@ -136,7 +139,9 @@ export default function BookArtisanScreen() {
       budget: budget || artisan.rate,
     });
 
-    router.replace('/');
+    router.replace(
+      getRedirectHref(`/artisan/${artisan.id}/booking-success?bookingId=${booking.id}`)
+    );
   };
 
   return (

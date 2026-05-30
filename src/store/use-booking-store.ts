@@ -7,6 +7,8 @@ import type { ClientBooking, CreateBookingPayload } from '@/types/booking';
 interface BookingState {
   bookings: ClientBooking[];
   createBooking: (payload: CreateBookingPayload) => ClientBooking;
+  acceptBooking: (id: string) => void;
+  declineBooking: (id: string) => void;
   cancelBooking: (id: string) => void;
 }
 
@@ -19,6 +21,8 @@ export const useBookingStore = create<BookingState>()(
         const booking: ClientBooking = {
           id: `booking-${Date.now()}`,
           clientId: payload.clientId,
+          clientName: payload.clientName.trim(),
+          clientAvatar: payload.clientAvatar,
           artisanId: payload.artisanId,
           artisanName: payload.artisanName,
           artisanAvatar: payload.artisanAvatar,
@@ -45,6 +49,26 @@ export const useBookingStore = create<BookingState>()(
           ),
         });
       },
+
+      acceptBooking: (id) => {
+        set({
+          bookings: get().bookings.map((booking) =>
+            booking.id === id && booking.status === 'pending'
+              ? { ...booking, status: 'accepted' }
+              : booking
+          ),
+        });
+      },
+
+      declineBooking: (id) => {
+        set({
+          bookings: get().bookings.map((booking) =>
+            booking.id === id && booking.status === 'pending'
+              ? { ...booking, status: 'declined' }
+              : booking
+          ),
+        });
+      },
     }),
     {
       name: 'booking-storage',
@@ -55,4 +79,8 @@ export const useBookingStore = create<BookingState>()(
 
 export function getBookingsForClient(bookings: ClientBooking[], clientId: string) {
   return bookings.filter((booking) => booking.clientId === clientId);
+}
+
+export function getBookingById(bookings: ClientBooking[], bookingId: string) {
+  return bookings.find((booking) => booking.id === bookingId);
 }

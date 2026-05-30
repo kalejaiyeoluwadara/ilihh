@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Platform,
   ScrollView,
@@ -7,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { BookingRequest } from '@/data/artisans';
+import { AcceptJobSuccessModal } from '@/components/accept-job-success-modal';
 import { BookingRequestCard } from './booking-request-card';
 
 interface ArtisanDashboardProps {
@@ -19,6 +21,7 @@ interface ArtisanDashboardProps {
   rating: string;
   onAcceptBooking: (id: string, price: string) => void;
   onDeclineBooking: (id: string) => void;
+  onGoToTasks: () => void;
 }
 
 export function ArtisanDashboard({
@@ -31,10 +34,28 @@ export function ArtisanDashboard({
   rating,
   onAcceptBooking,
   onDeclineBooking,
+  onGoToTasks,
 }: ArtisanDashboardProps) {
   const pendingRequests = bookingRequests.filter((req) => req.status === 'pending');
+  const [acceptedRequest, setAcceptedRequest] = useState<BookingRequest | null>(null);
+
+  const handleAcceptBooking = (id: string, price: string) => {
+    const request = pendingRequests.find((req) => req.id === id);
+    if (request) {
+      setAcceptedRequest(request);
+    }
+    onAcceptBooking(id, price);
+  };
+
+  const performanceMessage =
+    activeJobsCount > 0
+      ? `${activeJobsCount} active ${activeJobsCount === 1 ? 'job' : 'jobs'} — you're in demand!`
+      : pendingRequests.length > 0
+        ? `${pendingRequests.length} new ${pendingRequests.length === 1 ? 'request' : 'requests'} waiting`
+        : 'All caught up — stay online for new bookings';
 
   return (
+    <>
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContainer}
@@ -43,9 +64,6 @@ export function ArtisanDashboard({
       <View className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-5 mb-6">
         <View className="flex-row justify-between items-center">
           <View className="flex-row items-center gap-3">
-            <View className="w-12 h-12 bg-white dark:bg-slate-800 rounded-2xl items-center justify-center shadow-sm">
-              <Text className="text-xl">🦊</Text>
-            </View>
             <View>
               <Text className="font-poppins-bold text-sm text-text-primary dark:text-slate-50">
                 Status: {isOnline ? 'Online' : 'Offline'}
@@ -67,42 +85,61 @@ export function ArtisanDashboard({
         </View>
       </View>
 
-      {/* Stats Grid */}
-      <Text className="font-poppins-semibold text-base text-text-primary dark:text-slate-100 mb-3">
-        Performance Overview
-      </Text>
-      <View className="flex-row flex-wrap gap-4 mb-6">
-        <View className="flex-1 min-w-[45%] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-4">
-          <Text className="font-poppins text-xs text-text-secondary dark:text-slate-500">
-            Earnings (Week)
+      {/* Performance stats */}
+      <View className="mb-6">
+        <View className="mb-4">
+          <Text className="font-poppins-semibold text-base text-text-primary dark:text-slate-100">
+            Your Week at a Glance
           </Text>
-          <Text className="font-poppins-bold text-lg text-text-primary dark:text-slate-50 mt-1">
+          <Text className="mt-1 font-poppins text-xs text-text-secondary dark:text-slate-400">
+            {performanceMessage}
+          </Text>
+        </View>
+
+        <View className="mb-3 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm shadow-slate-200/60 dark:border-slate-800/80 dark:bg-slate-900 dark:shadow-none">
+          <Text className="font-poppins text-[9px] uppercase tracking-wider text-text-secondary dark:text-slate-500">
+            Total earnings
+          </Text>
+          <Text className="mt-1.5 font-poppins-bold text-3xl text-text-primary dark:text-slate-50">
             ₦{earnings.toLocaleString()}
           </Text>
+          <View className="mt-3 self-start rounded-full bg-emerald-50 px-2.5 py-1 dark:bg-emerald-950/40">
+            <Text className="font-poppins-semibold text-[10px] text-primary-green dark:text-emerald-400">
+              +12% from last week
+            </Text>
+          </View>
         </View>
-        <View className="flex-1 min-w-[45%] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-4">
-          <Text className="font-poppins text-xs text-text-secondary dark:text-slate-500">
-            Active Jobs
-          </Text>
-          <Text className="font-poppins-bold text-lg text-primary-purple dark:text-indigo-400 mt-1">
-            {activeJobsCount} Jobs
-          </Text>
-        </View>
-        <View className="flex-1 min-w-[45%] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-4">
-          <Text className="font-poppins text-xs text-text-secondary dark:text-slate-500">
-            Completed
-          </Text>
-          <Text className="font-poppins-bold text-lg text-primary-green dark:text-emerald-400 mt-1">
-            {completedJobsThisMonth} jobs
-          </Text>
-        </View>
-        <View className="flex-1 min-w-[45%] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl p-4">
-          <Text className="font-poppins text-xs text-text-secondary dark:text-slate-500">
-            Rating
-          </Text>
-          <Text className="font-poppins-bold text-lg text-warning mt-1">
-            ⭐ {rating}
-          </Text>
+
+        <View className="flex-row flex-wrap gap-3">
+          <View className="min-w-[47%] flex-1 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm shadow-slate-200/60 dark:border-slate-800/80 dark:bg-slate-900 dark:shadow-none">
+            <View className="mb-3 h-1 w-7 rounded-full bg-primary-purple" />
+            <Text className="font-poppins text-[9px] uppercase tracking-wider text-text-secondary dark:text-slate-500">
+              Active jobs
+            </Text>
+            <Text className="mt-1.5 font-poppins-bold text-2xl text-primary-purple dark:text-indigo-400">
+              {activeJobsCount}
+            </Text>
+          </View>
+
+          <View className="min-w-[47%] flex-1 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm shadow-slate-200/60 dark:border-slate-800/80 dark:bg-slate-900 dark:shadow-none">
+            <View className="mb-3 h-1 w-7 rounded-full bg-primary-green" />
+            <Text className="font-poppins text-[9px] uppercase tracking-wider text-text-secondary dark:text-slate-500">
+              Completed
+            </Text>
+            <Text className="mt-1.5 font-poppins-bold text-2xl text-primary-green dark:text-emerald-400">
+              {completedJobsThisMonth}
+            </Text>
+          </View>
+
+          <View className="min-w-[47%] flex-1 rounded-3xl border border-slate-100 bg-white p-4 shadow-sm shadow-slate-200/60 dark:border-slate-800/80 dark:bg-slate-900 dark:shadow-none">
+            <View className="mb-3 h-1 w-7 rounded-full bg-warning" />
+            <Text className="font-poppins text-[9px] uppercase tracking-wider text-text-secondary dark:text-slate-500">
+              Avg. rating
+            </Text>
+            <Text className="mt-1.5 font-poppins-bold text-2xl text-warning">
+              {rating}
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -127,7 +164,7 @@ export function ArtisanDashboard({
             <BookingRequestCard
               key={req.id}
               request={req}
-              onAccept={onAcceptBooking}
+              onAccept={handleAcceptBooking}
               onDecline={onDeclineBooking}
             />
           ))
@@ -173,6 +210,17 @@ export function ArtisanDashboard({
         </View>
       </View>
     </ScrollView>
+
+    <AcceptJobSuccessModal
+      visible={acceptedRequest !== null}
+      request={acceptedRequest}
+      onDismiss={() => setAcceptedRequest(null)}
+      onGoToTasks={() => {
+        setAcceptedRequest(null);
+        onGoToTasks();
+      }}
+    />
+    </>
   );
 }
 

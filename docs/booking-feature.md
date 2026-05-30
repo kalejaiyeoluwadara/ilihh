@@ -44,8 +44,8 @@ No backend. Use Zustand + AsyncStorage for persistence. Keep the implementation 
 |-------|----------|-------|
 | Service description | Yes | Min 10 characters — what the client needs done |
 | Location | Yes | Pre-fill from logged-in user's location |
-| Preferred date | Yes | Native date picker (`@expo/ui/community/datetime-picker`), today → 90 days ahead |
-| Preferred time | Yes | Native time picker |
+| Preferred date | Yes | Native date picker (`@react-native-community/datetimepicker`), today → 90 days ahead |
+| Preferred time | Yes | Native time picker (`@react-native-community/datetimepicker`) |
 | Budget | No | Pre-fill with artisan's starting rate |
 
 ### Out of scope (v1)
@@ -59,9 +59,9 @@ No backend. Use Zustand + AsyncStorage for persistence. Keep the implementation 
 
 ### Optional v1.1
 
-- Success confirmation screen before returning home
-- Deep link to Bookings tab after submit
-- Merge client bookings into artisan `BookingRequest` feed
+- ~~Success confirmation screen before returning home~~ ✅ Done
+- ~~Deep link to Bookings tab after submit~~ ✅ Done
+- ~~Merge client bookings into artisan dashboard/tasks feed~~ ✅ Done — Tasks tab shows accepted jobs
 
 ---
 
@@ -162,7 +162,7 @@ Follow [AGENTS.md](../AGENTS.md) and patterns from auth screens and artisan deta
 | Component | Responsibility |
 |-----------|----------------|
 | `booking-artisan-summary.tsx` | Compact artisan card at top of booking form |
-| `booking-datetime-field.tsx` | Native date/time picker field |
+| `booking-success-content.tsx` | Success confirmation UI after submit |
 | `client-booking-card.tsx` | Single booking row in client Bookings tab |
 | `booking-status-badge.tsx` | Status pill (pending, accepted, etc.) |
 

@@ -3,6 +3,8 @@ export type BookingStatus = 'pending' | 'accepted' | 'declined' | 'completed' | 
 export interface ClientBooking {
   id: string;
   clientId: string;
+  clientName: string;
+  clientAvatar: string;
   artisanId: string;
   artisanName: string;
   artisanAvatar: string;
@@ -18,6 +20,8 @@ export interface ClientBooking {
 
 export interface CreateBookingPayload {
   clientId: string;
+  clientName: string;
+  clientAvatar: string;
   artisanId: string;
   artisanName: string;
   artisanAvatar: string;

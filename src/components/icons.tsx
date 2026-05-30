@@ -234,3 +234,15 @@ export function ClockIcon({ size = 20, color, style }: IconProps) {
     />
   );
 }
+
+export function CheckCircleIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'checkmark.circle.fill', android: 'check_circle', web: 'check_circle' }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
