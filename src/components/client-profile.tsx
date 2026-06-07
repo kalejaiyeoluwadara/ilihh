@@ -1,13 +1,22 @@
-import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Image } from 'expo-image';
-import { images } from '@/constants/images';
+import { router } from 'expo-router';
+
+import {
+  InfoIcon,
+  LogOutIcon,
+  PencilIcon,
+  RefreshIcon,
+  ShieldIcon,
+  SwapIcon,
+} from '@/components/icons';
+import { ProfileSettingsRow } from '@/components/profile-settings-row';
+import { getProfileImageSource } from '@/lib/profile';
+import type { User } from '@/types/user';
 
 interface ClientProfileProps {
   isAuthenticated: boolean;
-  userName?: string;
-  userLocation?: string;
-  userRole: 'client' | 'artisan';
+  user?: User | null;
   onToggleRole: () => void;
   onResetOnboarding: () => void;
   onLogout?: () => void;
@@ -16,41 +25,50 @@ interface ClientProfileProps {
 
 export function ClientProfile({
   isAuthenticated,
-  userName = 'Guest',
-  userLocation = 'Ilisan, Ogun State',
-  userRole,
+  user,
   onToggleRole,
   onResetOnboarding,
   onLogout,
   onLoginPress,
 }: ClientProfileProps) {
+  const userName = user?.fullName ?? 'Guest';
+  const userLocation = user?.location ?? 'Ilisan, Ogun State';
+  const userEmail = user?.email;
+  const iconColor = '#7C3AED';
+
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
-      {/* Profile Header Card */}
-      <View className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[24px] p-6 items-center mb-6">
+      <View className="mb-6 items-center rounded-[24px] border border-slate-100 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900">
         <View className="relative">
           <Image
-            source={images.mascotHappy}
+            source={getProfileImageSource(user)}
             style={styles.avatar}
             contentFit="cover"
           />
           {isAuthenticated ? (
-            <View className="absolute bottom-0 right-0 bg-primary-green w-4 h-4 rounded-full border-2 border-white dark:border-slate-900" />
+            <View className="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white bg-primary-green dark:border-slate-900" />
           ) : null}
         </View>
-        
-        <Text className="font-poppins-bold text-lg text-text-primary dark:text-slate-50 mt-4">
+
+        <Text className="mt-4 font-poppins-bold text-lg text-text-primary dark:text-slate-50">
           {userName}
         </Text>
-        <Text className="font-poppins text-xs text-text-secondary dark:text-slate-400 mt-1">
-          {isAuthenticated ? `Client Account • ${userLocation}` : 'Sign in to save your profile and bookings'}
+        <Text className="mt-1 font-poppins text-xs text-text-secondary dark:text-slate-400">
+          {isAuthenticated
+            ? `Client Account • ${userLocation}`
+            : 'Sign in to save your profile and bookings'}
         </Text>
+        {isAuthenticated && userEmail ? (
+          <Text className="mt-1 font-poppins text-[11px] text-text-secondary dark:text-slate-500">
+            {userEmail}
+          </Text>
+        ) : null}
 
-        <View className="bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1 rounded-full mt-3">
+        <View className="mt-3 rounded-full bg-indigo-50 px-3 py-1 dark:bg-indigo-950/40">
           <Text className="font-poppins-semibold text-[10px] text-primary-purple dark:text-indigo-400">
             CLIENT
           </Text>
@@ -64,104 +82,78 @@ export function ClientProfile({
           >
             <Text className="font-poppins-semibold text-sm text-white">Sign In or Create Account</Text>
           </TouchableOpacity>
-        ) : null}
+        ) : (
+          <TouchableOpacity
+            onPress={() => router.push('/profile/edit')}
+            activeOpacity={0.8}
+            className="mt-5 w-full items-center rounded-2xl border border-primary-purple/20 bg-primary-purple/10 py-3 dark:border-indigo-500/30 dark:bg-indigo-500/10"
+          >
+            <Text className="font-poppins-semibold text-sm text-primary-purple dark:text-indigo-400">
+              Edit Profile
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      {/* Settings Sections */}
-      <Text className="font-poppins-semibold text-xs text-text-secondary dark:text-slate-500 uppercase tracking-wider mb-3 px-1">
+      <Text className="mb-3 px-1 font-poppins-semibold text-xs uppercase tracking-wider text-text-secondary dark:text-slate-500">
         Account Settings
       </Text>
 
-      <View className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[24px] overflow-hidden mb-6">
-        {/* Toggle Role Button */}
-        <TouchableOpacity
-          onPress={onToggleRole}
-          activeOpacity={0.7}
-          className="flex-row justify-between items-center px-5 py-4 border-b border-slate-100/50 dark:border-slate-800/50"
-        >
-          <View className="flex-row items-center gap-3">
-            <Text className="text-lg">🔄</Text>
-            <View>
-              <Text className="font-poppins-semibold text-xs text-text-primary dark:text-slate-100">
-                Switch to Artisan
-              </Text>
-              <Text className="font-poppins text-[10px] text-text-secondary dark:text-slate-400 mt-0.5">
-                Offer your own services on ilihh
-              </Text>
-            </View>
-          </View>
-          <Text className="text-slate-400 dark:text-slate-600 text-xs">➔</Text>
-        </TouchableOpacity>
+      <View className="mb-6 overflow-hidden rounded-[24px] border border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
+        {isAuthenticated ? (
+          <ProfileSettingsRow
+            icon={<PencilIcon size={18} color={iconColor} />}
+            title="Edit Profile"
+            subtitle="Update your name, phone, location, and photo"
+            onPress={() => router.push('/profile/edit')}
+          />
+        ) : null}
 
-        {/* Reset Onboarding */}
-        <TouchableOpacity
+        <ProfileSettingsRow
+          icon={<SwapIcon size={18} color={iconColor} />}
+          title="Switch to Artisan"
+          subtitle="Offer your own services on ilihh"
+          onPress={onToggleRole}
+        />
+
+        <ProfileSettingsRow
+          icon={<RefreshIcon size={18} color={iconColor} />}
+          title="Reset Onboarding"
+          subtitle="View onboarding screen introduction again"
           onPress={onResetOnboarding}
-          activeOpacity={0.7}
-          className={`flex-row justify-between items-center px-5 py-4 ${isAuthenticated ? 'border-b border-slate-100/50 dark:border-slate-800/50' : ''}`}
-        >
-          <View className="flex-row items-center gap-3">
-            <Text className="text-lg">🔁</Text>
-            <View>
-              <Text className="font-poppins-semibold text-xs text-text-primary dark:text-slate-100">
-                Reset Onboarding
-              </Text>
-              <Text className="font-poppins text-[10px] text-text-secondary dark:text-slate-400 mt-0.5">
-                View onboarding screen introduction again
-              </Text>
-            </View>
-          </View>
-          <Text className="text-slate-400 dark:text-slate-600 text-xs">➔</Text>
-        </TouchableOpacity>
+          showDivider={isAuthenticated}
+        />
 
         {isAuthenticated ? (
-          <TouchableOpacity
+          <ProfileSettingsRow
+            icon={<LogOutIcon size={18} color="#EF4444" />}
+            title="Log Out"
+            subtitle="Sign out of your ilihh account"
             onPress={onLogout}
-            activeOpacity={0.7}
-            className="flex-row justify-between items-center px-5 py-4"
-          >
-            <View className="flex-row items-center gap-3">
-              <Text className="text-lg">🚪</Text>
-              <View>
-                <Text className="font-poppins-semibold text-xs text-danger">
-                  Log Out
-                </Text>
-                <Text className="font-poppins text-[10px] text-text-secondary dark:text-slate-400 mt-0.5">
-                  Sign out of your ilihh account
-                </Text>
-              </View>
-            </View>
-            <Text className="text-slate-400 dark:text-slate-600 text-xs">➔</Text>
-          </TouchableOpacity>
+            titleClassName="text-danger"
+            showDivider={false}
+          />
         ) : null}
       </View>
 
-      <Text className="font-poppins-semibold text-xs text-text-secondary dark:text-slate-500 uppercase tracking-wider mb-3 px-1">
+      <Text className="mb-3 px-1 font-poppins-semibold text-xs uppercase tracking-wider text-text-secondary dark:text-slate-500">
         General
       </Text>
 
-      <View className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[24px] overflow-hidden mb-8">
-        <View className="flex-row justify-between items-center px-5 py-4 border-b border-slate-100/50 dark:border-slate-800/50">
-          <View className="flex-row items-center gap-3">
-            <Text className="text-lg">ℹ️</Text>
-            <Text className="font-poppins-semibold text-xs text-text-primary dark:text-slate-100">
-              Help & Support
-            </Text>
-          </View>
-          <Text className="text-slate-400 dark:text-slate-600 text-xs">➔</Text>
-        </View>
+      <View className="mb-8 overflow-hidden rounded-[24px] border border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
+        <ProfileSettingsRow
+          icon={<InfoIcon size={18} color={iconColor} />}
+          title="Help & Support"
+        />
 
-        <View className="flex-row justify-between items-center px-5 py-4">
-          <View className="flex-row items-center gap-3">
-            <Text className="text-lg">🛡️</Text>
-            <Text className="font-poppins-semibold text-xs text-text-primary dark:text-slate-100">
-              Privacy Policy & Terms
-            </Text>
-          </View>
-          <Text className="text-slate-400 dark:text-slate-600 text-xs">➔</Text>
-        </View>
+        <ProfileSettingsRow
+          icon={<ShieldIcon size={18} color={iconColor} />}
+          title="Privacy Policy & Terms"
+          showDivider={false}
+        />
       </View>
 
-      <Text className="font-poppins text-[10px] text-text-secondary dark:text-slate-600 text-center mb-4">
+      <Text className="mb-4 text-center font-poppins text-[10px] text-text-secondary dark:text-slate-600">
         Ilisan Help Hub v1.0.0
       </Text>
     </ScrollView>
@@ -176,7 +168,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingHorizontal: 24,
     paddingTop: 16,
-    paddingBottom: 100, // extra padding so we don't get covered by floating tabs
+    paddingBottom: 100,
   },
   avatar: {
     width: 90,

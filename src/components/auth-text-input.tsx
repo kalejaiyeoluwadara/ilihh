@@ -9,6 +9,7 @@ interface AuthTextInputProps {
   secureTextEntry?: boolean;
   keyboardType?: 'default' | 'email-address' | 'phone-pad';
   autoCapitalize?: 'none' | 'sentences' | 'words';
+  editable?: boolean;
   rightElement?: React.ReactNode;
 }
 
@@ -21,6 +22,7 @@ export function AuthTextInput({
   secureTextEntry,
   keyboardType = 'default',
   autoCapitalize = 'sentences',
+  editable = true,
   rightElement,
 }: AuthTextInputProps) {
   return (
@@ -44,7 +46,8 @@ export function AuthTextInput({
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize}
           autoCorrect={false}
-          style={styles.input}
+          editable={editable}
+          style={[styles.input, !editable && styles.inputDisabled]}
           className="font-poppins text-sm text-text-primary dark:text-slate-50"
         />
         {rightElement}
@@ -60,5 +63,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingVertical: 14,
+  },
+  inputDisabled: {
+    opacity: 0.7,
   },
 });

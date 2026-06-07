@@ -193,9 +193,7 @@ export default function HomeScreen() {
           ) : (
             <ClientProfile
               isAuthenticated={isAuthenticated}
-              userName={user?.fullName}
-              userLocation={user?.location}
-              userRole={userRole}
+              user={user}
               onToggleRole={handleToggleRole}
               onResetOnboarding={resetOnboarding}
               onLogout={logout}
@@ -224,9 +222,7 @@ export default function HomeScreen() {
           ) : (
             <ArtisanProfile
               isAuthenticated={isAuthenticated}
-              userName={user?.fullName}
-              userLocation={user?.location}
-              userRole={userRole}
+              user={user}
               onToggleRole={handleToggleRole}
               onResetOnboarding={resetOnboarding}
               onLogout={logout}

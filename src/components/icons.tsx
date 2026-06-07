@@ -259,6 +259,106 @@ export function SendIcon({ size = 20, color, style }: IconProps) {
   );
 }
 
+export function CameraIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'camera.fill', android: 'photo_camera', web: 'photo_camera' }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
+
+export function PhotoLibraryIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'photo.on.rectangle', android: 'photo_library', web: 'photo_library' }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
+
+export function PencilIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'pencil', android: 'edit', web: 'edit' }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
+
+export function LogOutIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'rectangle.portrait.and.arrow.right', android: 'logout', web: 'logout' }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
+
+export function RefreshIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'arrow.clockwise', android: 'refresh', web: 'refresh' }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
+
+export function SwapIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'arrow.left.arrow.right', android: 'swap_horiz', web: 'swap_horiz' }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
+
+export function InfoIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{
+        ios: 'info.circle',
+        android: 'info',
+        web: 'info',
+      }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
+
+export function ShieldIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'shield', android: 'shield', web: 'shield' }}
+      size={size}
+      weight="medium"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
+
 export function ChevronRightIcon({ size = 20, color, style }: IconProps) {
   return (
     <SymbolView

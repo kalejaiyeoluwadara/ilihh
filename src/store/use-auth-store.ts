@@ -2,9 +2,11 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 import { validateLogin, validateSignUp } from '@/lib/auth-validation';
+import { validateProfileUpdate } from '@/lib/profile-validation';
 import { safeStorage } from '@/lib/storage';
 import { useAppStore } from '@/store/use-app-store';
 import type { LoginCredentials, SignUpPayload } from '@/types/auth';
+import type { UpdateProfilePayload } from '@/types/profile';
 import type { User, UserRole } from '@/types/user';
 
 interface StoredAccount {
@@ -26,6 +28,7 @@ interface AuthState {
   signUp: (payload: SignUpPayload) => AuthResult;
   logout: () => void;
   updateUserRole: (role: UserRole) => void;
+  updateProfile: (payload: UpdateProfilePayload) => AuthResult;
 }
 
 const DEMO_ACCOUNT: StoredAccount = {
@@ -127,6 +130,39 @@ export const useAuthStore = create<AuthState>()(
         }));
 
         useAppStore.getState().setUserRole(role);
+      },
+
+      updateProfile: (payload) => {
+        const currentUser = get().user;
+        if (!currentUser) {
+          return { success: false, error: 'You must be signed in to update your profile' };
+        }
+
+        const validation = validateProfileUpdate(payload);
+        if (!validation.isValid) {
+          const firstError = Object.values(validation.errors).find(Boolean);
+          return { success: false, error: firstError ?? 'Please fix the form errors' };
+        }
+
+        const avatarUri = payload.avatarUri?.trim();
+        const updatedUser: User = {
+          ...currentUser,
+          fullName: payload.fullName.trim(),
+          phone: payload.phone.trim(),
+          location: payload.location.trim(),
+          avatarUri: avatarUri || undefined,
+        };
+
+        set((state) => ({
+          user: updatedUser,
+          registeredUsers: state.registeredUsers.map((entry) =>
+            entry.user.id === updatedUser.id
+              ? { ...entry, user: updatedUser }
+              : entry
+          ),
+        }));
+
+        return { success: true };
       },
     }),
     {
