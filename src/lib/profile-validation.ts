@@ -30,10 +30,5 @@ export function validateProfileUpdate(payload: UpdateProfilePayload): ProfileVal
     errors.location = 'Enter a valid location';
   }
 
-  const avatarUri = payload.avatarUri?.trim();
-  if (avatarUri && !avatarUri.startsWith('http')) {
-    errors.avatarUri = 'Enter a valid image URL starting with http';
-  }
-
   return { isValid: Object.keys(errors).length === 0, errors };
 }

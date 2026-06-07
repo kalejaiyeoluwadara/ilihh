@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View, useColorScheme } from 'react-native';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
 
 import { AuthScreenLayout } from '@/components/auth-screen-layout';
 import { AuthTextInput } from '@/components/auth-text-input';
 import { BackIcon } from '@/components/icons';
 import { PrimaryButton } from '@/components/primary-button';
+import { ProfilePhotoPicker } from '@/components/profile-photo-picker';
 import { getProfileImageSource } from '@/lib/profile';
 import { validateProfileUpdate } from '@/lib/profile-validation';
 import { useAuthStore } from '@/store/use-auth-store';
@@ -21,23 +21,19 @@ function EditProfileForm({ user }: { user: User }) {
   const [fullName, setFullName] = useState(user.fullName);
   const [phone, setPhone] = useState(user.phone);
   const [location, setLocation] = useState(user.location);
-  const [avatarUri, setAvatarUri] = useState(user.avatarUri ?? '');
+  const [avatarUri, setAvatarUri] = useState<string | undefined>(user.avatarUri);
   const [errors, setErrors] = useState<ProfileValidationErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const iconColor = isDark ? '#94A3B8' : '#64748B';
 
-  const previewSource = avatarUri.trim()
-    ? { uri: avatarUri.trim() }
-    : getProfileImageSource(user);
-
   const handleSave = () => {
     const payload = {
       fullName,
       phone,
       location,
-      avatarUri: avatarUri.trim() || undefined,
+      avatarUri,
     };
 
     const validation = validateProfileUpdate(payload);
@@ -72,18 +68,24 @@ function EditProfileForm({ user }: { user: User }) {
             <BackIcon size={18} color={iconColor} />
           </TouchableOpacity>
 
-          <View className="mb-6 items-center">
-            <Image source={previewSource} style={{ width: 88, height: 88, borderRadius: 28 }} />
-            <Text className="mt-4 font-poppins-bold text-2xl text-text-primary dark:text-slate-50">
+          <View className="mb-2 items-center">
+            <Text className="font-poppins-bold text-2xl text-text-primary dark:text-slate-50">
               Edit Profile
             </Text>
             <Text className="mt-2 px-2 text-center font-poppins text-sm text-text-secondary dark:text-slate-400">
-              Update your personal details. Your email cannot be changed here.
+              Update your photo and personal details. Your email cannot be changed here.
             </Text>
           </View>
         </View>
       }
     >
+      <ProfilePhotoPicker
+        value={avatarUri}
+        fallbackSource={getProfileImageSource(user)}
+        onChange={setAvatarUri}
+        error={errors.avatarUri}
+      />
+
       <AuthTextInput
         label="Full name"
         value={fullName}
@@ -122,15 +124,6 @@ function EditProfileForm({ user }: { user: User }) {
         onChangeText={setLocation}
         placeholder="Ilisan, Ogun State"
         error={errors.location}
-      />
-
-      <AuthTextInput
-        label="Profile photo URL (optional)"
-        value={avatarUri}
-        onChangeText={setAvatarUri}
-        placeholder="https://example.com/photo.jpg"
-        autoCapitalize="none"
-        error={errors.avatarUri}
       />
 
       {formError ? (

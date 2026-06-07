@@ -35,7 +35,14 @@
           }
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow ilihh to access your photos to set your profile picture.",
+          "cameraPermission": "Allow ilihh to access your camera to take a profile photo."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
