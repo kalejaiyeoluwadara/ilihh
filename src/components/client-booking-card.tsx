@@ -8,10 +8,13 @@ import type { ClientBooking } from '@/types/booking';
 interface ClientBookingCardProps {
   booking: ClientBooking;
   onCancel?: (id: string) => void;
+  onChatPress?: (booking: ClientBooking) => void;
 }
 
-export function ClientBookingCard({ booking, onCancel }: ClientBookingCardProps) {
+export function ClientBookingCard({ booking, onCancel, onChatPress }: ClientBookingCardProps) {
   const canCancel = booking.status === 'pending' && onCancel;
+  const canChat =
+    (booking.status === 'pending' || booking.status === 'accepted') && onChatPress;
 
   return (
     <View className="mb-4 rounded-3xl border border-slate-100 bg-white p-4 dark:border-slate-800/80 dark:bg-slate-900">
@@ -65,16 +68,30 @@ export function ClientBookingCard({ booking, onCancel }: ClientBookingCardProps)
         </Text>
       ) : null}
 
-      {canCancel ? (
-        <TouchableOpacity
-          onPress={() => onCancel(booking.id)}
-          activeOpacity={0.8}
-          className="mt-4 items-center rounded-2xl bg-slate-100 py-3 dark:bg-slate-800"
-        >
-          <Text className="font-poppins-semibold text-xs text-slate-700 dark:text-slate-300">
-            Cancel Request
-          </Text>
-        </TouchableOpacity>
+      {canChat || canCancel ? (
+        <View className={`mt-4 gap-2 ${canChat && canCancel ? '' : ''}`}>
+          {canChat ? (
+            <TouchableOpacity
+              onPress={() => onChatPress(booking)}
+              activeOpacity={0.8}
+              className="items-center rounded-2xl bg-primary-purple py-3 dark:bg-indigo-600"
+            >
+              <Text className="font-poppins-semibold text-xs text-white">Chat with Artisan</Text>
+            </TouchableOpacity>
+          ) : null}
+
+          {canCancel ? (
+            <TouchableOpacity
+              onPress={() => onCancel(booking.id)}
+              activeOpacity={0.8}
+              className="items-center rounded-2xl bg-slate-100 py-3 dark:bg-slate-800"
+            >
+              <Text className="font-poppins-semibold text-xs text-slate-700 dark:text-slate-300">
+                Cancel Request
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
       ) : null}
     </View>
   );

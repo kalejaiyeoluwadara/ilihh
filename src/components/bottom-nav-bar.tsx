@@ -23,9 +23,15 @@ interface BottomNavBarProps {
   userRole: 'client' | 'artisan';
   activeTab: string;
   onTabChange: (tabId: any) => void;
+  unreadMessagesCount?: number;
 }
 
-export function BottomNavBar({ userRole, activeTab, onTabChange }: BottomNavBarProps) {
+export function BottomNavBar({
+  userRole,
+  activeTab,
+  onTabChange,
+  unreadMessagesCount = 0,
+}: BottomNavBarProps) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -77,11 +83,18 @@ export function BottomNavBar({ userRole, activeTab, onTabChange }: BottomNavBarP
                   className="flex-1 items-center justify-center"
                 >
                   <View
-                    className={`h-8 w-8 items-center justify-center rounded-xl ${
+                    className={`relative h-8 w-8 items-center justify-center rounded-xl ${
                       isActive ? 'bg-primary-purple/10 dark:bg-indigo-500/20' : 'bg-transparent'
                     }`}
                   >
                     <Icon size={18} color={iconColor} />
+                    {tab.id === 'messages' && unreadMessagesCount > 0 ? (
+                      <View className="absolute -right-1 -top-1 min-h-[14px] min-w-[14px] items-center justify-center rounded-full bg-primary-purple px-1 dark:bg-indigo-500">
+                        <Text className="font-poppins-bold text-[8px] text-white">
+                          {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
+                        </Text>
+                      </View>
+                    ) : null}
                   </View>
 
                   <Text

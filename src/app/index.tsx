@@ -8,6 +8,9 @@ import { useAuthStore } from '@/store/use-auth-store';
 import { useBookingStore } from '@/store/use-booking-store';
 import { ARTISANS, MOCK_BOOKING_REQUESTS, MOCK_STATS } from '@/data/artisans';
 import { buildArtisanTasks, buildDashboardRequests } from '@/lib/artisan-tasks';
+import { getUnreadCountForUser } from '@/lib/chat';
+import { buildArtisanConversationPayload, startConversation } from '@/lib/start-conversation';
+import { useChatStore } from '@/store/use-chat-store';
 import { ClientDashboard } from '@/components/client-dashboard';
 import { ArtisanDashboard } from '@/components/artisan-dashboard';
 import { HomeHeader } from '@/components/home-header';
@@ -48,14 +51,19 @@ export default function HomeScreen() {
   // Separate tab states to avoid calling setState in useEffect (fixes lint error)
   const [activeClientTab, setActiveClientTab] = useState<
     'home' | 'bookings' | 'messages' | 'profile'
-  >(() => (tab === 'bookings' ? 'bookings' : 'home'));
+  >(() => (tab === 'bookings' || tab === 'messages' ? tab : 'home'));
   const [activeArtisanTab, setActiveArtisanTab] = useState<
     'dashboard' | 'tasks' | 'messages' | 'profile'
-  >(() => (tab === 'tasks' ? 'tasks' : 'dashboard'));
+  >(() => (tab === 'tasks' || tab === 'messages' ? tab : 'dashboard'));
 
   const clientBookings = useBookingStore((state) => state.bookings);
   const acceptClientBooking = useBookingStore((state) => state.acceptBooking);
   const declineClientBooking = useBookingStore((state) => state.declineBooking);
+  const conversations = useChatStore((state) => state.conversations);
+
+  const unreadMessagesCount = user
+    ? getUnreadCountForUser(conversations, user.id, userRole)
+    : 0;
 
   const activeTab = userRole === 'client' ? activeClientTab : activeArtisanTab;
   const setActiveTab = (tabId: any) => {
@@ -115,6 +123,31 @@ export default function HomeScreen() {
     }
   };
 
+  const handleMessageClient = (request: (typeof MOCK_BOOKING_REQUESTS)[number]) => {
+    const booking = request.id.startsWith('booking-')
+      ? clientBookings.find((entry) => entry.id === request.id)
+      : undefined;
+
+    const payload = buildArtisanConversationPayload(
+      booking
+        ? {
+            id: booking.clientId,
+            name: booking.clientName,
+            avatar: booking.clientAvatar,
+          }
+        : {
+            id: `mock-client-${request.id}`,
+            name: request.clientName,
+            avatar: request.clientAvatar,
+          },
+      booking?.id
+    );
+
+    if (!payload) return;
+
+    startConversation(payload, isAuthenticated, '/?tab=messages');
+  };
+
   const handleDeclineBooking = (id: string) => {
     if (id.startsWith('booking-')) {
       declineClientBooking(id);
@@ -156,7 +189,7 @@ export default function HomeScreen() {
           ) : activeTab === 'bookings' ? (
             <ClientBookings onBrowsePress={() => setActiveTab('home')} />
           ) : activeTab === 'messages' ? (
-            <ClientMessages />
+            <ClientMessages onBrowsePress={() => setActiveTab('home')} />
           ) : (
             <ClientProfile
               isAuthenticated={isAuthenticated}
@@ -181,6 +214,7 @@ export default function HomeScreen() {
               rating={MOCK_STATS.rating}
               onAcceptBooking={handleAcceptBooking}
               onDeclineBooking={handleDeclineBooking}
+              onMessageClient={handleMessageClient}
               onGoToTasks={() => setActiveTab('tasks')}
             />
           ) : activeTab === 'tasks' ? (
@@ -206,6 +240,7 @@ export default function HomeScreen() {
           userRole={userRole}
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          unreadMessagesCount={unreadMessagesCount}
         />
       </SafeAreaView>
     </View>

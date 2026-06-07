@@ -2,8 +2,10 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 
 import { ClientBookingCard } from '@/components/client-booking-card';
 import { SearchIcon } from '@/components/icons';
+import { buildClientConversationPayload, startConversation } from '@/lib/start-conversation';
 import { getBookingsForClient, useBookingStore } from '@/store/use-booking-store';
 import { useAuthStore } from '@/store/use-auth-store';
+import type { ClientBooking } from '@/types/booking';
 
 interface ClientBookingsProps {
   onBrowsePress: () => void;
@@ -11,10 +13,28 @@ interface ClientBookingsProps {
 
 export function ClientBookings({ onBrowsePress }: ClientBookingsProps) {
   const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const bookings = useBookingStore((state) => state.bookings);
   const cancelBooking = useBookingStore((state) => state.cancelBooking);
 
   const clientBookings = user ? getBookingsForClient(bookings, user.id) : [];
+
+  const handleChatPress = (booking: ClientBooking) => {
+    if (!user) return;
+
+    const payload = buildClientConversationPayload(
+      user,
+      {
+        id: booking.artisanId,
+        name: booking.artisanName,
+        avatar: booking.artisanAvatar,
+        category: booking.artisanCategory,
+      },
+      booking.id
+    );
+
+    startConversation(payload, isAuthenticated, '/?tab=bookings');
+  };
 
   if (clientBookings.length === 0) {
     return (
@@ -64,6 +84,7 @@ export function ClientBookings({ onBrowsePress }: ClientBookingsProps) {
               key={booking.id}
               booking={booking}
               onCancel={cancelBooking}
+              onChatPress={handleChatPress}
             />
           ))}
         </View>

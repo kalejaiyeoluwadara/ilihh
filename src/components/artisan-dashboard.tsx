@@ -21,6 +21,7 @@ interface ArtisanDashboardProps {
   rating: string;
   onAcceptBooking: (id: string, price: string) => void;
   onDeclineBooking: (id: string) => void;
+  onMessageClient: (request: BookingRequest) => void;
   onGoToTasks: () => void;
 }
 
@@ -34,6 +35,7 @@ export function ArtisanDashboard({
   rating,
   onAcceptBooking,
   onDeclineBooking,
+  onMessageClient,
   onGoToTasks,
 }: ArtisanDashboardProps) {
   const pendingRequests = bookingRequests.filter((req) => req.status === 'pending');
@@ -166,6 +168,7 @@ export function ArtisanDashboard({
               request={req}
               onAccept={handleAcceptBooking}
               onDecline={onDeclineBooking}
+              onMessagePress={onMessageClient}
             />
           ))
         )}

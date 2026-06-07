@@ -246,3 +246,27 @@ export function CheckCircleIcon({ size = 20, color, style }: IconProps) {
     />
   );
 }
+
+export function SendIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'paperplane.fill', android: 'send', web: 'send' }}
+      size={size}
+      weight="semibold"
+      tintColor={color}
+      style={style}
+    />
+  );
+}
+
+export function ChevronRightIcon({ size = 20, color, style }: IconProps) {
+  return (
+    <SymbolView
+      name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
+      size={size}
+      weight="semibold"
+      tintColor={color}
+      style={style}
+    />
+  );
+}

@@ -11,12 +11,14 @@ import { PortfolioSection } from '@/components/portfolio-section';
 import { ReviewsSection } from '@/components/reviews-section';
 import { getArtisanDetail } from '@/lib/artisans';
 import { getRedirectHref } from '@/lib/navigation';
+import { buildClientConversationPayload, startConversation } from '@/lib/start-conversation';
 import { useAuthStore } from '@/store/use-auth-store';
 
 export default function ArtisanDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const artisan = typeof id === 'string' ? getArtisanDetail(id) : undefined;
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
 
   const handleBookPress = () => {
     if (!artisan?.isAvailable) return;
@@ -29,6 +31,27 @@ export default function ArtisanDetailScreen() {
     }
 
     router.push(getRedirectHref(bookRoute));
+  };
+
+  const handleMessagePress = () => {
+    if (!artisan) return;
+
+    const messageRoute = `/artisan/${artisan.id}`;
+    const payload = user
+      ? buildClientConversationPayload(user, {
+          id: artisan.id,
+          name: artisan.name,
+          avatar: artisan.avatar,
+          category: artisan.category,
+        })
+      : null;
+
+    if (!payload) {
+      router.push(`/login?redirect=${encodeURIComponent(messageRoute)}`);
+      return;
+    }
+
+    startConversation(payload, isAuthenticated, messageRoute);
   };
 
   if (!artisan) {
@@ -97,6 +120,7 @@ export default function ArtisanDetailScreen() {
           rate={artisan.rate}
           isAvailable={artisan.isAvailable}
           onBookPress={handleBookPress}
+          onMessagePress={handleMessagePress}
         />
       </SafeAreaView>
     </View>
