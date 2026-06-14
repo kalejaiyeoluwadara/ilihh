@@ -14,7 +14,12 @@ import '@/global.css';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import OnboardingScreen from './onboarding';
+import AreYouDoneScreen from './are-you-done';
 import { useAppStore } from '@/store/use-app-store';
+
+// TEMP: render the "Are you done?" screen first on launch. Set to false to
+// restore the normal app flow (onboarding -> app).
+const SHOW_ARE_YOU_DONE_FIRST = true;
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -38,6 +43,15 @@ export default function RootLayout() {
 
   if (!loaded && !error) {
     return null;
+  }
+
+  // TEMP: show the joke screen as the first thing that renders.
+  if (SHOW_ARE_YOU_DONE_FIRST) {
+    return (
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <AreYouDoneScreen />
+      </ThemeProvider>
+    );
   }
 
   if (!hasCompletedOnboarding) {
